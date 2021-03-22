@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import './App.scss';
 
-function App() {
+var today = new Date();
+var lastWeek = new Date(
+  today.getFullYear(),
+  today.getMonth(),
+  today.getDate() - 7
+);
+
+const App = () => {
+  const [value, onChange] = useState(new Date());
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='app-container'>
+      <div className='show-day'>123</div>
+      <Calendar
+        className='show-month'
+        tileContent={({ activeStartDate, date, view }) =>
+          view === 'month' ? <p>1</p> : null
+        }
+        locale='vi-VN'
+        onChange={onChange}
+        value={value}
+      />
     </div>
   );
-}
+};
 
 export default App;
