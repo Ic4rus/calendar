@@ -103,7 +103,16 @@ const App = () => {
       date.getFullYear()
     );
 
-    var hsDay = (jd + 9) % 10;
+    const hsDay = (jd + 9) % 10;
+    const ebDay = (jd + 1) % 12;
+
+    const baseLuckyHours = Constants.baseLuckyHours;
+    const luckyHours = [];
+
+    for (let i = 0; i < 12; i++) {
+      const j = (i + (ebDay % 6) * 2) % 12;
+      luckyHours[j] = baseLuckyHours[i];
+    }
 
     var hsFirstHour = (hsDay % 5) * 2;
 
@@ -112,20 +121,25 @@ const App = () => {
         number: '00:00',
         hs: Constants.heavenlyStems[hsFirstHour],
         eb: Constants.earthlyBranches[0],
+        luckyHour: luckyHours[0],
       },
     ];
 
     for (let i = 1; i <= 23; i = i + 2) {
+      hsFirstHour++;
       const number = i < 10 ? `0${i}:00` : `${i}:00`;
-      const heavenlyStem =
-        Constants.heavenlyStems[(++hsFirstHour % 10) - (i === 23 ? 2 : 0)];
-      const earthlyBranch =
-        Constants.earthlyBranches[(Math.floor(i / 2) + 1) % 12];
+      const hsIndex = i === 23 ? hsFirstHour - 12 : hsFirstHour % 10;
+
+      const heavenlyStem = Constants.heavenlyStems[hsIndex];
+
+      const ebIndex = (Math.floor(i / 2) + 1) % 12;
+      const earthlyBranch = Constants.earthlyBranches[ebIndex];
 
       time.push({
         number: number,
         hs: heavenlyStem,
         eb: earthlyBranch,
+        luckyHour: luckyHours[ebIndex],
       });
     }
 
@@ -136,13 +150,13 @@ const App = () => {
     <div
       className='app-container'
       style={{
-        backgroundImage: `url('https://bing.com/th?id=OHR.LoftedMadagascar_EN-US9720623596_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp')`,
+        backgroundImage: `url('https://source.unsplash.com/random/1600x900')`,
         backgroundSize: 'cover',
       }}
     >
       <div className='show-hour'>
         {showTime(selectedDate).map((time) => (
-          <div>
+          <div className={time.luckyHour === 1 ? 'lucky-hour' : 'bad-hour'}>
             <div>{time.number}</div>
             <div>{`${time.hs[0]} ${time.eb[0]} (${time.hs[1]} ${time.eb[1]})`}</div>
           </div>
