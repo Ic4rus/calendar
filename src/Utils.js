@@ -150,3 +150,33 @@ export const getSunLongitude = (jdn, timeZone) => {
   L = L - Math.PI * 2 * Math.floor(L / (Math.PI * 2)); // Normalize to (0, 2*PI)
   return Math.floor((L / Math.PI) * 6);
 };
+
+export const jdAtVST = (dd, mm, yy, hour, minutes) => {
+  var ret = jdFromDate(dd, mm, yy);
+
+  return ret - 0.5 + (hour - 7) / 24.0 + minutes / 1440.0;
+};
+
+export const solarLongitude = (jd) => {
+  var T, T2, dr, M, L0, C, lambda, theta, omega;
+  T = (jd - 2451545.0) / 36525; // Time in Julian centuries from 2000-01-01 12:00:00 GMT
+  T2 = T * T;
+  dr = Math.PI / 180; // degree to radian
+  // mean anomaly, degree
+  M = 357.5291 + 35999.0503 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+  // mean longitude, degree
+  L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+  // Sun's equation of center
+  C = (1.9146 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M);
+  C =
+    C +
+    (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) +
+    0.00029 * Math.sin(dr * 3 * M);
+  theta = L0 + C; // true longitude, degree
+  // obtain apparent longitude by correcting for nutation and aberration
+  omega = 125.04 - 1934.136 * T;
+  lambda = theta - 0.00569 - 0.00478 * Math.sin(omega * dr);
+  // Normalize to (0, 360)
+  lambda = lambda - 360 * Math.floor(lambda / 360); // Normalize to (0, 2*PI)
+  return lambda;
+};
